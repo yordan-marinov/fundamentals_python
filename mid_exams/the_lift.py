@@ -1,39 +1,38 @@
-def lift_order(people, runs):
-    que = people
+def distribution(lst, count_people, max_people):
+    for index in range(len(lst)):
 
-    for index in range(len(runs)):
-        current_run = LIFT_MAXIMUM_PEOPLE - runs[index]
+        current_run = max_people - lst[index]
+        if count_people < current_run:
+            current_run = count_people
 
-        if que < current_run:
-            current_run = que
+        lst[index] += current_run
+        count_people -= current_run
 
-        que -= current_run
-        runs[index] += current_run
-
-    return que, runs
+    return count_people, lst
 
 
-LIFT_MAXIMUM_PEOPLE = 4
+def lift_distribution(max_people):
+    que = int(input())
+    lift = [int(n) for n in input().split()]
 
-waiting_people = int(input())
-lift_runs = [int(p) for p in input().split()]
+    que, lift = distribution(lift, que, MAXIMUM_PEOPLE)
 
-left_people, lift = lift_order(waiting_people, lift_runs)
-
-is_full = (
-        LIFT_MAXIMUM_PEOPLE * len(lift) == sum(lift)
-)
-
-if left_people == 0 and not is_full:
-    print("The lift has empty spots!")
-    print(" ".join(str(e) for e in lift_runs))
-
-elif left_people > 0 and is_full:
-    print(
-        f"There isn't enough space! "
-        f"{left_people} people in a queue!"
+    is_lift_full = (
+            max_people * len(lift) == sum(lift)
     )
-    print(" ".join(str(e) for e in lift_runs))
 
-else:
-    print(" ".join(str(e) for e in lift_runs))
+    if que == 0 and not is_lift_full:
+        print(f"The lift has empty spots!")
+        print(*lift)
+
+    elif que > 0 and is_lift_full:
+        print(f"There isn't enough space! {que} people in a queue!")
+        print(*lift)
+
+    elif que == 0 and is_lift_full:
+        print(*lift)
+
+
+MAXIMUM_PEOPLE = 4
+
+lift_distribution(MAXIMUM_PEOPLE)

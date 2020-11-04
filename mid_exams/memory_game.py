@@ -1,62 +1,63 @@
-def matching_elements_manipulator(lst, first_index, second_index):
-    if lst[first_index] == lst[second_index]:
-        removed_element = lst.pop(first_index)
-        lst.remove(removed_element)
-        print(
-            f"Congrats! You have found matching elements - {removed_element}!"
-        )
-
-    else:
-        print("Try again!")
-    return lst
+def indexes_validated(lst, i, ii):
+    return (
+            (i != ii) and
+            (i in range(len(lst)) and ii in range(len(lst)))
+    )
 
 
-def split_elements(lst, count):
+def adding_elements(lst, moves, twins):
+    print(
+        "Invalid input! "
+        "Adding additional elements to the board"
+    )
+
     middle = len(lst) // 2
-    lst = (
+
+    return (
             lst[:middle] +
-            [f"-{count}a" for _ in range(2)] +
+            [f"-{moves}a" for _ in range(twins)] +
             lst[middle:]
     )
-    print("Invalid input! Adding additional elements to the board")
+
+
+def valid_indexes(lst, i, ii):
+    if lst[i] == lst[ii]:
+        popped_element = lst.pop(i)
+        lst.remove(popped_element)
+        print(
+            f"Congrats! "
+            f"You have found matching elements - "
+            f"{popped_element}!"
+        )
+    else:
+        print("Try again!")
+
     return lst
-
-
-def indexes_validation(lst, first_index, second_index):
-    return (
-            (first_index == second_index) or
-            (first_index not in range(len(lst))) or
-            (second_index not in range(len(lst)))
-    )
 
 
 sequence = input().split()
 
-number_of_moves = 0
-flag = False
+TWINS = 2
 
+moves = 0
 while True:
-    command = input()
-    if command == "end":
+
+    data = input()
+    if data == "end":
+        print(f"Sorry you lose :(")
+        print(*sequence)
         break
 
-    number_of_moves += 1
+    moves += 1
 
-    token = command.split()
-    index_1 = int(token[0])
-    index_2 = int(token[1])
+    index_1, index_2 = [int(i) for i in data.split()]
 
-    if indexes_validation(sequence, index_1, index_2):
-        sequence = split_elements(sequence, number_of_moves)
+    if not indexes_validated(sequence, index_1, index_2):
+        sequence = adding_elements(sequence, moves, TWINS)
+        continue
 
-    else:
-        sequence = matching_elements_manipulator(sequence, index_1, index_2)
+    valid_indexes(sequence, index_1, index_2)
 
     if not sequence:
-        print(f"You have won in {number_of_moves} turns!")
-        flag = True
+        print(f"You have won in {moves} turns!")
         break
-
-if not flag:
-    print("Sorry you lose :(")
-    print(" ".join(sequence))
