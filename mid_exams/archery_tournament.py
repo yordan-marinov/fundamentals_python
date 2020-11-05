@@ -1,32 +1,45 @@
-def shoot(lst, token):
+def shoot_targets(lst, start, radius):
+    end_index = None
+    if command == "Shoot Left":
+        end_index = (start - radius) % len(lst)
 
-    items = token.split("@")
-    direction = items.pop(0)
-    start_index, length = [int(i) for i in items]
+    elif command == "Shoot Right":
+        end_index = (start + radius) % len(lst)
 
-    if direction == "Left":
-        return (start_index - length) % len(lst)
+    if lst[end_index] > 5:
+        p = 5
+        lst[end_index] -= 5
+    else:
+        p = lst[end_index]
+        lst[end_index] = 0
 
-    return (start_index + length) % len(lst)
-
-
-def reversing_list(lst):
-    return lst[::-1]
-
-
-targets = [int(x) for x in input().split("|")]
+    return lst, p
 
 
+targets = [int(n) for n in input().split("|")]
+
+points = 0
 while True:
-    data = input()
 
+    data = input()
     if data == "Game over":
+        print(" - ".join(str(t) for t in targets))
+        print(
+            f"Iskren finished the archery tournament "
+            f"with {points} points!"
+        )
         break
 
-    command = data.split()
+    elif data == "Reverse":
+        targets = targets[::-1]
+        continue
 
-    if command[0] == "Shoot":
-        targets = shoot(targets, command[1])
+    command, *token = data.split("@")
+    start_index, length = [int(i) for i in token]
 
-    else:
-        targets = reversing_list(targets)
+    if start_index in range(len(targets)):
+        targets, current_points = shoot_targets(
+            targets, start_index, length
+        )
+
+        points += current_points
