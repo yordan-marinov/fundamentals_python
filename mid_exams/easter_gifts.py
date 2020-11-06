@@ -1,20 +1,20 @@
-def out_of_stock(lst, present):
-    while present in lst:
-        lst[lst.index(present)] = "None"
+def out_of_stock(lst, gift):
+    while gift in lst:
+        lst[lst.index(gift)] = "None"
 
     return lst
 
 
-def required(lst, present, i):
-    if i in range(len(lst)):
-        lst[i] = present
+def required(lst, gift, index):
+    index = int(index)
+    if index in range(len(lst)):
+        lst[index] = gift
 
     return lst
 
 
-def just_in_case(lst, present):
-    lst[-1] = present
-
+def just_in_case(lst, gift):
+    lst[-1] = gift
     return lst
 
 
@@ -24,19 +24,15 @@ while True:
 
     data = input()
     if data == "No Money":
-        print(" ".join(g for g in gifts if g != "None"))
+        print(*[g for g in gifts if g != "None"])
         break
 
-    token = data.split()
-    command = token[0]
-    gift = token[1]
+    command, *items = data.split()
 
-    if command == "OutOfStock":
-        gifts = out_of_stock(gifts, gift)
+    commands = {
+        "OutOfStock": out_of_stock,
+        "Required": required,
+        "JustInCase": just_in_case,
+    }
 
-    elif command == "Required":
-        index = int(token[2])
-        gifts = required(gifts, gift, index)
-
-    elif command == "JustInCase":
-        gifts = just_in_case(gifts, gift)
+    gifts = commands[command](gifts, *items)

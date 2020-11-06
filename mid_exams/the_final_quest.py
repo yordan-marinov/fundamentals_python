@@ -1,67 +1,63 @@
-def delete(lst, i):
-    if i + 1 in range(len(lst)):
-        lst.pop(i + 1)
+def delete_word(lst, index):
+    index = int(index)
+    if index + 1 in range(len(lst)):
+        del lst[index + 1]
 
     return lst
 
 
-def swap(lst, string_1, string_2):
-    if string_1 in lst and string_2 in lst:
-        index_1, index_2 = lst.index(string_1), lst.index(string_2)
-        lst[index_1], lst[index_2] = lst[index_2], lst[index_1]
+def swap(lst, word_1, word_2):
+    if word_1 in lst and word_2 in lst:
+        i_1, i_2 = lst.index(word_1), lst.index(word_2)
+        lst[i_1], lst[i_2] = lst[i_2], lst[i_1]
 
     return lst
 
 
-def put(lst, string, i):
-    if i + 1 in range(len(lst)):
-        if i == len(lst)-1:
-            lst.append(string)
+def put(lst, word, index):
+    index = int(index)
+    if index - 1 in range(1, len(lst) + 1):
+        if index == len(lst) - 1:
+            lst.append(word)
         else:
-            lst.insert(i - 1, string)
+            lst.insert(index - 1, word)
 
     return lst
 
 
-def sorting(lst):
+def sort_words(lst):
     return sorted(lst, reverse=True)
 
 
-def replace(lst, string_1, string_2):
-    if string_2 in lst:
-        lst[lst.index(string_2)] = string_1
+def replace(lst, word_1, word_2):
+    if word_2 in lst:
+        lst[lst.index(word_2)] = word_1
 
     return lst
 
 
-strings = input().split()
+words = input().split()
 
 while True:
 
     data = input()
     if data == "Stop":
-        print(" ".join(strings))
+        print(*words)
         break
 
-    token = data.split()
-    command = token[0]
+    command, *items = data.split()
 
     if command == "Delete":
-        index = int(token[1])
-        strings = delete(strings, index)
+        words = delete_word(words, *items)
 
     elif command == "Swap":
-        word_1, word_2 = token[1], token[2]
-        strings = swap(strings, word_1, word_2)
+        words = swap(words, *items)
 
     elif command == "Put":
-        word = token[1]
-        index = int(token[2])
-        strings = put(strings, word, index)
+        words = put(words, *items)
 
     elif command == "Sort":
-        strings = sorting(strings)
+        words = sort_words(words)
 
     elif command == "Replace":
-        word_1, word_2 = token[1], token[2]
-        strings = replace(strings, word_1, word_2)
+        words = replace(words, *items)
