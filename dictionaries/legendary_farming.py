@@ -27,13 +27,19 @@ def all_materials_constructor():
 
 
 def legendary_farming():
-    materials, non_key_materials, key_material = all_materials_constructor()
+    (
+        materials,
+        non_key_materials,
+        key_material
+    ) = all_materials_constructor()
 
     print(f"{LEGENDARY_ITEMS[key_material]} obtained!")
 
     materials[key_material] -= REQUIRED_QUANTITY
     sorted_materials = dict(
-        sorted(materials.items(), key=lambda p: (-p[1], p[0]))
+        sorted(
+            materials.items(), key=lambda p: (-p[1], p[0])
+        )
     )
 
     [print(f"{k}: {v}") for k, v in sorted_materials.items()]
