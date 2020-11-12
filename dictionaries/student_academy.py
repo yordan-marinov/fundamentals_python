@@ -15,16 +15,19 @@ def get_data():
         students[name].append(grade)
 
     return {
-        k: average_grade(v)
-        for k, v in students.items()
-        if average_grade(v) >= MINIMUM_GRADE
+        key: average_grade(value)
+        for key, value in students.items()
+        if average_grade(value) >= MINIMUM_GRADE
     }
 
 
 MINIMUM_GRADE = 4.50
 
 sorted_students = dict(
-    sorted(get_data().items(), key=lambda p: -p[1])
+    sorted(
+        get_data().items(),
+        key=lambda p: -p[1]
+    )
 )
 
 [
