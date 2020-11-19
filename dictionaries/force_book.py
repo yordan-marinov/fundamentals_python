@@ -1,6 +1,15 @@
 from collections import defaultdict
 
 
+def user_in_checker(dct, name):
+    for users_list in dct.values():
+        for every_user in users_list:
+            if name in every_user:
+                users_list.remove(name)
+                return dct
+    return dct
+
+
 def data_sides_users():
     force_sides = defaultdict(list)
 
@@ -17,19 +26,16 @@ def data_sides_users():
         if "|" in data:
             side, user = data.split(" | ")
 
-            if user not in force_sides[side]:
+            if user not in force_sides.values():
+                print(force_sides.values())
                 force_sides[side].append(user)
 
         else:
             user, side = data.split(" -> ")
-            for users_list in force_sides.values():
-                for every_user in users_list:
 
-                    if user in every_user:
-                        users_list.remove(user)
-                        break
-
+            force_sides = user_in_checker(force_sides, users)
             force_sides[side].append(user)
+
             print(f"{user} joins the {side} side!")
 
 
