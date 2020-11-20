@@ -3,9 +3,9 @@ string = input()
 print(
     "".join(
         [
-            e
-            for i, e in enumerate(string)
-            if i == 0 or e != string[i-1]
+            symbol
+            for index, symbol in enumerate(string)
+            if index == 0 or symbol != string[index - 1]
         ]
     )
 )

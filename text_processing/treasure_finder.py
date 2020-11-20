@@ -1,4 +1,4 @@
-def data_extractor(string: str, splitters: tuple):
+def data_extractor(string: str, splitters: tuple) -> str:
     splitter_1, splitter_2 = splitters
     string = string.split(splitter_1, 1)
     string = string[1].split(splitter_2, 1)

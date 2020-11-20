@@ -1,7 +1,7 @@
 from itertools import zip_longest
 
 
-def multiply_elements(*args):
+def multiply_elements(*args: str) -> int:
     result = 1
     for number in args:
         result *= number
