@@ -40,17 +40,18 @@ for ticket in tickets:
 
     left_side, l_symbol = side_checker(ticket[:middle])
     right_side, r_symbol = side_checker(ticket[middle:])
+    correct_side = min(left_side, right_side)
 
     if (
             (len(left_side) == len(right_side)) and
             (l_symbol == r_symbol) and
-            (len(left_side) in range(6, 11))
+            (len(correct_side) in range(6, 11))
     ):
         if len(left_side) == VALID_LENGTH_TICKET // 2:
-            print(f'ticket "{ticket}" - {len(left_side)}{l_symbol} Jackpot!')
+            print(f'ticket "{ticket}" - {len(correct_side)}{l_symbol} Jackpot!')
 
-        elif len(left_side) in range(6, 10):
-            print(f'ticket "{ticket}" - {len(left_side)}{l_symbol}')
+        elif len(correct_side) in range(6, 10):
+            print(f'ticket "{ticket}" - {len(correct_side)}{l_symbol}')
 
     else:
         print(f'ticket "{ticket}" - no match')
