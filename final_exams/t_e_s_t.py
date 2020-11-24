@@ -1,7 +1,19 @@
-from functools import reduce
-strings = input()
+from collections import defaultdict
 
-# cool_threshold = sum([int(n) for n in strings if n.isdigit()])
-cool_threshold = reduce(lambda x, y: x * y, [int(n) for n in strings if n.isdigit()])
+cars = defaultdict(lambda : defaultdict(int))
+info = ["mileage", "petrol"]
+n = int(input())
 
-print(cool_threshold)
+for _ in range(n):
+    data = input().split("|")
+    car_name = data.pop(0)
+    mileage = int(data[0])
+    petrol = int(data[1])
+
+    for i in info:
+        if i == info[0]:
+            cars[car_name][i] = mileage
+        else:
+            cars[car_name][i] = petrol
+
+print(cars)
