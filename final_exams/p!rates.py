@@ -1,12 +1,9 @@
-def increase_values(lst_1, lst_2) -> list:
-    return [
-        sum(pairs)
-        for pairs in zip(lst_1, lst_2)
-    ]
+from collections import defaultdict
 
 
-def cities_map() -> dict:
-    result = {}
+def towns_data() -> dict:
+    result = defaultdict(lambda: defaultdict(int))
+
     while True:
 
         data = input()
@@ -14,88 +11,102 @@ def cities_map() -> dict:
             break
 
         data = data.split("||")
-        name = data.pop(0)
-        population_gold = [int(i) for i in data]
+        town = data[0]
+        data_population = int(data[1])
+        data_gold = int(data[2])
 
-        if name not in result:
-            result[name] = population_gold
-        else:
-            result[name] = increase_values(result[name], population_gold)
+        for name in POPULATION_GOLD:
+            if name == "population":
+                result[town][name] += data_population
+            else:
+                result[town][name] += data_gold
 
     return result
 
 
-def plunder(cities_dict: dict, city: str, *args) -> dict:
-    population_gold = [int(e) for e in args]
+def plunder(dd, *args) -> dict:
+    town = args[0]
+    people = int(args[1])
+    gold = int(args[2])
+    current_population = "population"
+    current_gold = "gold"
 
-    if city in cities_dict:
-        print(
-            f"{city} plundered! "
-            f"{population_gold[1]} gold stolen, "
-            f"{population_gold[0]} citizens killed."
-        )
+    dd[town][current_population] -= people
+    dd[town][current_gold] -= gold
 
-        cities_dict[city] = [
-            p - g
-            for p, g in zip(cities_dict[city], population_gold)
-        ]
+    print(
+        f"{town} plundered! "
+        f"{gold} gold stolen, "
+        f"{people} citizens killed."
+    )
+    if (
+            (dd[town][current_population] <= POPULATION_GOLD[current_population]) or
+            (dd[town][current_gold] <= POPULATION_GOLD[current_gold])
+    ):
+        print(f"{town} has been wiped off the map!")
+        del dd[town]
 
-        for v in cities_dict[city]:
-            if v <= 0:
-                print(f"{city} has been wiped off the map!")
-                del cities_dict[city]
-                continue
-
-    return cities_dict
+    return dd
 
 
-def prosper(cities_dict: dict, city: str, gold: int) -> dict:
+def prosper(dd, *args):
+    town = args[0]
+    gold = int(args[1])
+    current_gold = "gold"
+
     if gold > 0:
-        population_gold = [0, gold]
-        cities_dict[city] = increase_values(cities_dict[city], population_gold)
+        dd[town][current_gold] += gold
+
         print(
             f"{gold} gold added to the city treasury. "
-            f"{city} now has {cities_dict[city][1]} gold."
+            f"{town} now has {dd[town][current_gold]} gold."
         )
-
     else:
         print("Gold added cannot be a negative number!")
 
-    return cities_dict
+    return dd
 
 
-cities: dict = cities_map()
+def print_statement(dd: dict):
+    if dd:
+        remain_population = "population"
+        remain_gold = "gold"
+
+        print(
+            f"Ahoy, Captain! There are {len(dd)} "
+            f"wealthy settlements to go to:"
+        )
+
+        for key, value in sorted(
+                dd.items(), key=lambda x: (-x[1]["gold"], x[0])
+        ):
+            print(
+                f"{key} -> Population: {dd[key][remain_population]} citizens, "
+                f"Gold: {dd[key][remain_gold]} kg"
+            )
+    else:
+        print("Ahoy, Captain! All targets have been plundered and destroyed!")
+
+
+POPULATION_GOLD = {
+    "population": 0,
+    "gold": 0,
+}
+
+towns = towns_data()
 
 while True:
 
     token = input()
     if token == "End":
+        print_statement(towns)
         break
 
     token = token.split("=>")
     command = token.pop(0)
-    town = token.pop(0)
-    data = [int(i) for i in token]
 
     if command == "Plunder":
-        cities = plunder(cities, town, *data)
+        plunder(towns, *token)
 
     elif command == "Prosper":
-        gold = int(*data)
-        cities = prosper(cities, town, gold)
-
-if cities:
-    print(
-        f"Ahoy, Captain! "
-        f"There are {len(cities)} wealthy settlements to go to:"
-    )
-
-    for town, value in sorted(cities.items(), key=lambda x: (-x[1][1], x[0])):
-        print(
-            f"{town} -> Population: {value[0]} citizens, Gold: {value[1]} kg"
-        )
-else:
-    print(
-        "Ahoy, Captain! "
-        "All targets have been plundered and destroyed!"
-    )
+        prosper(towns, *token)

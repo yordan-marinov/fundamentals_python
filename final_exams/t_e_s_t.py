@@ -1,6 +1,7 @@
-a = {2: 3, 3: 3}
+from functools import reduce
+strings = input()
 
-del a[2]
+# cool_threshold = sum([int(n) for n in strings if n.isdigit()])
+cool_threshold = reduce(lambda x, y: x * y, [int(n) for n in strings if n.isdigit()])
 
-
-print(a)
+print(cool_threshold)
