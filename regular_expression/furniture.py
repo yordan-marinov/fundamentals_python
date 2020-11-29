@@ -21,7 +21,7 @@ while True:
 
         break
 
-    regex = r">{2}([A-Za-z]+)<{2}(\d+(\.\d+)?)!(\d+)"
+    regex = r"^>{2}([A-Za-z]+)<{2}(\d+(\.\d+)?)!(\d+)"
 
     furniture = re.finditer(regex, data)
 

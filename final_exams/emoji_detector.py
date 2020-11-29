@@ -1,53 +1,47 @@
 from functools import reduce
+import re
 
 
-def remove_surround_symbols(string: str) -> str:
-    return string[2:-2]
+def cool_threshold(string: str) -> int:
+    return reduce(
+        lambda x, y: x * y,
+        [
+            int(number)
+            for number in string
+            if number.isdigit()
+        ]
+    )
 
 
-def valid_emojis(string: str) -> list:
-    valid = []
-    for item in string.split():
-        if (
-                (item[:VALID_SURROUND_SYMBOLS[":"]] == item[-VALID_SURROUND_SYMBOLS[":"]:]) or
-                (item[:VALID_SURROUND_SYMBOLS["*"] == item[-VALID_SURROUND_SYMBOLS["*"]:]])
-        ):
+def get_matched(pattern: str, string: str) -> dict:
+    return {
+        match.group(): sum(
+            [ord(character) for character in match.group(2)
+             if character not in SURROUNDED_SYMBOLS]
+        )
+        for match in re.finditer(pattern, string)
+    }
 
-            if (
-                    (len(item[2:-2]) >= MINIMUM_EMOJI_LENGTH) and
-                    (item[2:-2][0].isupper()) and
-                    (item[2:-2][1:].islower())
-            ):
-                valid.append(item)
 
-    return valid
+def print_statement(string: str, matched_dict: dict) -> print:
+    print(f"Cool threshold: {cool_threshold(string)}")
 
+    print(
+        f"{len(matched_dict)} emojis found in the text. "
+        f"The cool ones are:"
+    )
+    [
+        print(emoji)
+        for emoji, value in matched_dict.items()
+        if value >= cool_threshold(string)
+    ]
+
+
+SURROUNDED_SYMBOLS = (":", "*")
 
 strings = input()
 
-VALID_SURROUND_SYMBOLS = {
-    ":": 2,
-    "*": 2,
-}
-MINIMUM_EMOJI_LENGTH = 3
+regex = r"(\*\*|::)([A-Z][a-z][a-z]+)\1"
+matched = get_matched(regex, strings)
 
-cool_threshold = reduce(
-    lambda x, y: x * y, [int(n) for n in strings if n.isdigit()]
-)
-
-print(f"Cool threshold: {cool_threshold}")
-print(
-    f"{len(valid_emojis(strings))} emojis found in the text. "
-    f"The coll ones are:"
-)
-
-emoji_values = []
-for emoji in valid_emojis(strings):
-
-    result = 0
-    for letter in emoji:
-        if letter not in VALID_SURROUND_SYMBOLS:
-            result += ord(letter)
-
-    if result >= cool_threshold:
-        print(f"{emoji}")
+print_statement(strings, matched)
