@@ -15,6 +15,7 @@ def cut(string: str, *args) -> str:
 def substitute(string: str, *args) -> str:
     substring = args[1]
     replace_string = args[2]
+
     if substring in string:
         string = string.replace(substring, replace_string)
         print(string)
@@ -30,7 +31,9 @@ while True:
 
     data = input()
     if data == "Done":
-        print(f"Your password is: {raw_string}")
+        print(
+            f"Your password is: {raw_string}"
+        )
         break
 
     index += 1

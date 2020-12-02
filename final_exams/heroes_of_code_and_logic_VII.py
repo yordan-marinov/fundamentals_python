@@ -21,7 +21,7 @@ def get_data() -> dict:
     return heroes
 
 
-def cast_spell(dd, *args) -> dict:
+def cast_spell(dd: dict, *args) -> dict:
     hero_name = args[0]
     mp_needed = int(args[1])
     spell_name = args[2]
@@ -42,7 +42,7 @@ def cast_spell(dd, *args) -> dict:
     return dd
 
 
-def take_damage(dd, *args) -> dict:
+def take_damage(dd: dict, *args) -> dict:
     hero_name = args[0]
     damage = int(args[1])
     attacker = args[2]
@@ -62,7 +62,7 @@ def take_damage(dd, *args) -> dict:
     return dd
 
 
-def recharge(dd, *args) -> dict:
+def recharge(dd: dict, *args) -> dict:
     hero_name = args[0]
     amount = int(args[1])
     mana_points = "mp"
@@ -79,7 +79,7 @@ def recharge(dd, *args) -> dict:
     return dd
 
 
-def heal(dd, *args) -> dict:
+def heal(dd: dict, *args) -> dict:
     hero_name = args[0]
     amount = int(args[1])
     hit_points = "hp"
@@ -96,35 +96,39 @@ def heal(dd, *args) -> dict:
     return dd
 
 
+def print_statement(dd: dict) -> print:
+    for name, key_value in sorted(dd.items(), key=lambda c: (-c[1]["hp"], c[0])):
+        print(f"{name}")
+
+        for key, value in key_value.items():
+            print(f"  {key.upper()}: {value}")
+
+
+def final_result(dd: dict):
+    while True:
+
+        data = input()
+        if data == "End":
+            print_statement(dd)
+            break
+
+        data = data.split(" - ")
+        command = data.pop(0)
+
+        COMMANDS[command](dd, *data)
+
+
 MAXIMUM_POINTS = {
     "hp": 100,
     "mp": 200,
 }
 
+COMMANDS = {
+    "CastSpell": cast_spell,
+    "TakeDamage": take_damage,
+    "Recharge": recharge,
+    "Heal": heal,
+}
+
 party: dict = get_data()
-
-while True:
-
-    data = input()
-    if data == "End":
-        break
-
-    data = data.split(" - ")
-    command = data.pop(0)
-
-    if command == "CastSpell":
-        cast_spell(party, *data)
-
-    elif command == "TakeDamage":
-        take_damage(party, *data)
-
-    elif command == "Recharge":
-        recharge(party, *data)
-
-    elif command == "Heal":
-        heal(party, *data)
-
-for name, key_value in sorted(party.items(), key=lambda c: (-c[1]["hp"], c[0])):
-    print(f"{name}")
-    for key, value in key_value.items():
-        print(f"  {key.upper()}: {value}")
+final_result(party)
