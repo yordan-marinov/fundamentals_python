@@ -11,22 +11,26 @@ def get_data():
             print_statement(players)
             break
 
-        if not "vs" in data:
+        if not " vs " in data:
             data = data.split(" -> ")
             name = data[0]
             position = data[1]
             skill = int(data[2])
 
-            if skill > players[name][position]:
-                players[name][position] += skill
+            if players[name][position] < skill:
+                players[name][position] = skill
 
+            elif players[name][position] >= skill:
+                continue
+            else:
+                players[name][position] += skill
         else:
             data = data.split(" vs ")
             player_1 = data[0]
             player_2 = data[1]
 
             if player_1 in players and player_2 in players:
-                battle_players(player_1, player_2, players)
+                players = battle_players(player_1, player_2, players)
 
 
 def battle_players(player_1, player_2, dd: dict) -> dict:
