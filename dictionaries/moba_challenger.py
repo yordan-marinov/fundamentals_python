@@ -26,8 +26,8 @@ def get_data():
                 players[name][position] += skill
         else:
             data = data.split(" vs ")
-            player_1 = data[0]
-            player_2 = data[1]
+            player_1 = data[0].strip()
+            player_2 = data[1].strip()
 
             if player_1 in players and player_2 in players:
                 players = battle_players(player_1, player_2, players)
@@ -42,8 +42,10 @@ def battle_players(player_1, player_2, dd: dict) -> dict:
 
             if player_1_total_points > player_2_total_points:
                 del dd[player_2]
+                break
             elif player_2_total_points > player_1_total_points:
                 del dd[player_1]
+                break
 
     return dd
 
