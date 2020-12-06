@@ -1,63 +1,64 @@
-def contains(lst: list, substring: str) -> list:
-    if substring in ''.join(lst):
-        print(f"{''.join(lst)} contains {substring}")
-    else:
+def main(string: str) -> str:
+    while True:
+
+        data = input()
+        if data == "Generate":
+            print(f"Your activation key is: {string}")
+            break
+
+        data = data.split(">>>")
+        command = data.pop(0)
+
+        string = COMMANDS[command](string, *data)
+
+    return string
+
+
+def contains(string: str, *args) -> str:
+    substring = args[0]
+    if substring not in string:
         print("Substring not found!")
+    else:
+        print(f"{string} contains {substring}")
 
-    return lst
-
-
-def flip(lst: list, subcommand: str, start: str, end: str) -> list:
-    start_index, end_index = int(start), int(end)
-
-    result = []
-    for i, e in enumerate(lst):
-
-        if i in range(start_index, end_index):
-            if subcommand == "Upper":
-                result.append(e.upper())
-            else:
-                result.append(e.lower())
-        else:
-            result.append(e)
-
-    print(''.join(result))
-
-    return result
+    return string
 
 
-def slice(lst: list, start: str, end: str) -> list:
-    start_index, end_index = int(start), int(end)
-    result = [
-        e
-        for i, e in enumerate(lst)
-        if i not in range(start_index, end_index)
-    ]
+def flip(string: str, *args) -> str:
+    start_index = int(args[1])
+    end_index = int(args[2])
 
-    print(''.join(result))
-
-    return result
-
-
-raw_activation_key = [l for l in input()]
-
-while True:
-
-    data = input()
-    if data == "Generate":
-        print(
-            f"Your activation key is: {''.join(raw_activation_key)}"
+    if args[0] == "Upper":
+        string = string.replace(
+            string[start_index: end_index],
+            string[start_index: end_index].upper()
         )
-        break
+    else:
+        string = string.replace(
+            string[start_index: end_index],
+            string[start_index: end_index].lower()
+        )
 
-    data = data.split(">>>")
-    command = data.pop(0)
+    print(string)
+    return string
 
-    if command == "Contains":
-        raw_activation_key = contains(raw_activation_key, *data)
 
-    elif command == "Flip":
-        raw_activation_key = flip(raw_activation_key, *data)
+def slice_string(string: str, *args) -> str:
+    start_index = int(args[0])
+    end_index = int(args[1])
 
-    elif command == "Slice":
-        raw_activation_key = slice(raw_activation_key, *data)
+    string = string.replace(
+        string[start_index: end_index], ""
+    )
+    print(string)
+    return string
+
+
+COMMANDS = {
+    "Contains": contains,
+    "Flip": flip,
+    "Slice": slice_string,
+}
+
+raw_activation_key = input()
+main(raw_activation_key)
