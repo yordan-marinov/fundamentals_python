@@ -20,14 +20,11 @@ def get_dragons_data() -> dict:
                 values[DEFAULT_VALUES[index][0]] = int(value)
 
         dragons_data[key] = values
-
     return dragons_data
 
 
 def average_values(*args, count: int):
-    for arg in  args:
-
-
+    pass
 
 
 DEFAULT_VALUES = {
