@@ -1,8 +1,5 @@
-from collections import defaultdict
-
-
-def towns_data() -> dict:
-    result = defaultdict(lambda: defaultdict(int))
+def get_cities_data() -> dict:
+    cities_data = {}
 
     while True:
 
@@ -11,102 +8,95 @@ def towns_data() -> dict:
             break
 
         data = data.split("||")
-        town = data[0]
-        data_population = int(data[1])
-        data_gold = int(data[2])
+        city_name = data[0]
+        population = int(data[1])
+        gold = int(data[2])
 
-        for name in POPULATION_GOLD:
-            if name == "population":
-                result[town][name] += data_population
-            else:
-                result[town][name] += data_gold
+        if city_name not in cities_data:
+            cities_data[city_name] = {
+                "population": population,
+                "gold": gold
+            }
+        else:
+            cities_data[city_name]["population"] += population
+            cities_data[city_name]["gold"] += gold
 
-    return result
+    return cities_data
 
 
-def plunder(dd, *args) -> dict:
-    town = args[0]
-    people = int(args[1])
-    gold = int(args[2])
-    current_population = "population"
-    current_gold = "gold"
+def main(dd: dict, commands: dict):
+    while True:
 
-    dd[town][current_population] -= people
-    dd[town][current_gold] -= gold
+        data = input()
+        if data == "End":
+            print_statement(dd)
+            break
+
+        data = data.split("=>")
+        command = data.pop(0)
+
+        commands[command](dd, *data)
+
+
+def plunder(dd: dict, *args) -> dict:
+    current_city_name = args[0]
+    current_people = int(args[1])
+    current_gold = int(args[2])
+
+    dd[current_city_name]["population"] -= current_people
+    dd[current_city_name]["gold"] -= current_gold
 
     print(
-        f"{town} plundered! "
-        f"{gold} gold stolen, "
-        f"{people} citizens killed."
+        f"{current_city_name} plundered! "
+        f"{current_gold} gold stolen, "
+        f"{current_people} citizens killed."
     )
     if (
-            (dd[town][current_population] <= POPULATION_GOLD[current_population]) or
-            (dd[town][current_gold] <= POPULATION_GOLD[current_gold])
+            dd[current_city_name]["population"] <= 0 or
+            dd[current_city_name]["gold"] <= 0
     ):
-        print(f"{town} has been wiped off the map!")
-        del dd[town]
+        print(f"{current_city_name} has been wiped off the map!")
+        del dd[current_city_name]
 
     return dd
 
 
-def prosper(dd, *args):
-    town = args[0]
-    gold = int(args[1])
-    current_gold = "gold"
+def prosper(dd: dict, *args) -> dict:
+    current_city_name = args[0]
+    current_gold = int(args[1])
 
-    if gold > 0:
-        dd[town][current_gold] += gold
-
-        print(
-            f"{gold} gold added to the city treasury. "
-            f"{town} now has {dd[town][current_gold]} gold."
-        )
-    else:
+    if current_gold < 0:
         print("Gold added cannot be a negative number!")
-
+    else:
+        dd[current_city_name]["gold"] += current_gold
+        print(
+            f"{current_gold} gold added to the city treasury. "
+            f"{current_city_name} now has "
+            f"{dd[current_city_name]['gold']} gold."
+        )
     return dd
 
 
-def print_statement(dd: dict):
-    if dd:
-        remain_population = "population"
-        remain_gold = "gold"
-
+def print_statement(dd: dict) -> print:
+    print(
+        f"Ahoy, Captain! "
+        f"There are {len(dd)} wealthy settlements to go to:"
+    )
+    for city, values in sorted(
+            dd.items(),
+            key=lambda pair: (-pair[1]['gold'], pair[0])
+    ):
         print(
-            f"Ahoy, Captain! There are {len(dd)} "
-            f"wealthy settlements to go to:"
+            f"{city} -> Population: "
+            f"{values['population']} citizens, "
+            f"Gold: {values['gold']} kg"
         )
 
-        for key, value in sorted(
-                dd.items(), key=lambda x: (-x[1]["gold"], x[0])
-        ):
-            print(
-                f"{key} -> Population: {dd[key][remain_population]} citizens, "
-                f"Gold: {dd[key][remain_gold]} kg"
-            )
-    else:
-        print("Ahoy, Captain! All targets have been plundered and destroyed!")
 
-
-POPULATION_GOLD = {
-    "population": 0,
-    "gold": 0,
+COMMANDS = {
+    "Plunder": plunder,
+    "Prosper": prosper,
 }
 
-towns = towns_data()
-
-while True:
-
-    token = input()
-    if token == "End":
-        print_statement(towns)
-        break
-
-    token = token.split("=>")
-    command = token.pop(0)
-
-    if command == "Plunder":
-        plunder(towns, *token)
-
-    elif command == "Prosper":
-        prosper(towns, *token)
+cities = get_cities_data()
+main(cities, COMMANDS)
