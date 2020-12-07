@@ -1,115 +1,22 @@
-def get_data() -> dict:
-    heroes_count = int(input())
+def get_heroes_data() -> dict:
+    heroes_data = {}
+    for _ in range(number_of_heroes):
+        data = input().split()
+        name = data[0]
+        hp = int(data[1])
+        mp = int(data[2])
 
-    heroes = {}
-    for _ in range(heroes_count):
-        hero_data = input().split()
+        heroes_data[name] = {"hp": hp, "mp": mp}
 
-        name = hero_data[0]
-        hit_points = int(hero_data[1])
-        mana_points = int(hero_data[2])
-
-        hero = {}
-        for key in MAXIMUM_POINTS.keys():
-            if key == "hp":
-                hero[key] = hit_points
-            else:
-                hero[key] = mana_points
-
-        heroes[name] = hero
-
-    return heroes
+    return heroes_data
 
 
-def cast_spell(dd: dict, *args) -> dict:
-    hero_name = args[0]
-    mp_needed = int(args[1])
-    spell_name = args[2]
-    mana_points = "mp"
-
-    if dd[hero_name][mana_points] >= mp_needed:
-        dd[hero_name][mana_points] -= mp_needed
-        print(
-            f"{hero_name} has successfully cast {spell_name} and "
-            f"now has {dd[hero_name][mana_points]} MP!"
-        )
-
-    else:
-        print(
-            f"{hero_name} does not have enough MP to cast {spell_name}!"
-        )
-
-    return dd
-
-
-def take_damage(dd: dict, *args) -> dict:
-    hero_name = args[0]
-    damage = int(args[1])
-    attacker = args[2]
-    hit_points = "hp"
-
-    dd[hero_name][hit_points] -= damage
-
-    if dd[hero_name][hit_points] > 0:
-        print(
-            f"{hero_name} was hit for {damage} HP by {attacker} and "
-            f"now has {dd[hero_name][hit_points]} HP left!"
-        )
-    else:
-        del dd[hero_name]
-        print(f"{hero_name} has been killed by {attacker}!")
-
-    return dd
-
-
-def recharge(dd: dict, *args) -> dict:
-    hero_name = args[0]
-    amount = int(args[1])
-    mana_points = "mp"
-    recharged_amount = 0
-
-    if dd[hero_name][mana_points] + amount > MAXIMUM_POINTS[mana_points]:
-        recharged_amount += MAXIMUM_POINTS[mana_points] - dd[hero_name][mana_points]
-    else:
-        recharged_amount += amount
-
-    dd[hero_name][mana_points] += recharged_amount
-    print(f"{hero_name} recharged for {recharged_amount} MP!")
-
-    return dd
-
-
-def heal(dd: dict, *args) -> dict:
-    hero_name = args[0]
-    amount = int(args[1])
-    hit_points = "hp"
-    healed_amount = 0
-
-    if dd[hero_name][hit_points] + amount > MAXIMUM_POINTS[hit_points]:
-        healed_amount += MAXIMUM_POINTS[hit_points] - dd[hero_name][hit_points]
-    else:
-        healed_amount += amount
-
-    dd[hero_name][hit_points] += healed_amount
-    print(f"{hero_name} healed for {healed_amount} HP!")
-
-    return dd
-
-
-def print_statement(dd: dict) -> print:
-    for name, key_value in sorted(dd.items(), key=lambda c: (-c[1]["hp"], c[0])):
-        print(f"{name}")
-
-        for key, value in key_value.items():
-            print(f"  {key.upper()}: {value}")
-
-
-def final_result(dd: dict):
+def main_manipulation_printing_func(dd: dict):
     while True:
 
         data = input()
         if data == "End":
-            print_statement(dd)
+            sorting_printing_statement(heroes)
             break
 
         data = data.split(" - ")
@@ -118,7 +25,79 @@ def final_result(dd: dict):
         COMMANDS[command](dd, *data)
 
 
-MAXIMUM_POINTS = {
+def cast_spell(dd: dict, *args) -> dict:
+    hero_name = args[0]
+    mp_needed = int(args[1])
+    spell_name = args[2]
+
+    if dd[hero_name]["mp"] >= mp_needed:
+        dd[hero_name]["mp"] -= mp_needed
+        print(
+            f"{hero_name} has successfully cast {spell_name} "
+            f"and now has {dd[hero_name]['mp']} MP!"
+        )
+    else:
+        print(f"{hero_name} does not have enough MP to cast {spell_name}!")
+
+    return dd
+
+
+def take_damage(dd: dict, *args) -> dict:
+    hero_name = args[0]
+    damage = int(args[1])
+    attacker = args[2]
+
+    dd[hero_name]["hp"] -= damage
+
+    if dd[hero_name]["hp"] > 0:
+        print(
+            f"{hero_name} was hit for {damage} HP by {attacker} "
+            f"and now has {dd[hero_name]['hp']} HP left!"
+        )
+    else:
+        print(f"{hero_name} has been killed by {attacker}!")
+        del dd[hero_name]
+
+    return dd
+
+
+def recharge(dd: dict, *args) -> dict:
+    hero_name = args[0]
+    amount = int(args[1])
+
+    if dd[hero_name]["mp"] + amount > MAXIMUM_HP_MP_POINTS["mp"]:
+        amount = MAXIMUM_HP_MP_POINTS["mp"] - dd[hero_name]["mp"]
+
+    dd[hero_name]["mp"] += amount
+    print(f"{hero_name} recharged for {amount} MP!")
+
+    return dd
+
+
+def heal(dd: dict, *args) -> dict:
+    hero_name = args[0]
+    amount = int(args[1])
+
+    if dd[hero_name]["hp"] + amount > MAXIMUM_HP_MP_POINTS["hp"]:
+        amount = MAXIMUM_HP_MP_POINTS["hp"] - dd[hero_name]["hp"]
+
+    dd[hero_name]["hp"] += amount
+    print(f"{hero_name} healed for {amount} HP!")
+
+    return dd
+
+
+def sorting_printing_statement(dd: dict) -> print:
+    for name, values in sorted(
+            dd.items(),
+            key=lambda pair: (-pair[1]["hp"], pair[0])
+    ):
+        print(f"{name}")
+        print(f"  HP: {values['hp']}")
+        print(f"  MP: {values['mp']}")
+
+
+MAXIMUM_HP_MP_POINTS = {
     "hp": 100,
     "mp": 200,
 }
@@ -130,5 +109,7 @@ COMMANDS = {
     "Heal": heal,
 }
 
-party: dict = get_data()
-final_result(party)
+number_of_heroes = int(input())
+
+heroes: dict = get_heroes_data()
+main_manipulation_printing_func(heroes)
