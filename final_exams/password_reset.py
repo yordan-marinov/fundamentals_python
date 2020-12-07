@@ -1,57 +1,58 @@
+def get_data_print_final_result() -> print:
+    text = input()
+
+    while True:
+
+        data = input()
+        if data == "Done":
+            print(f"Your password is: {text}")
+            break
+
+        data = data.split()
+
+        command = data.pop(0)
+
+        text = COMMANDS[command](text, *data)
+
+
 def take_odd(string: str) -> str:
-    return ''.join(
-        [e for i, e in enumerate(string) if i % 2 != 0]
-    )
+    result = ""
+    for character_index in range(1, len(string), 2):
+        result += string[character_index]
+
+    print(result)
+
+    return result
 
 
 def cut(string: str, *args) -> str:
-    index, length = int(args[1]), int(args[2])
-    start = index
-    end = index + length
+    start_index = int(args[0])
+    substring_length = int(args[1])
+    end_index = start_index + substring_length
 
-    return string[:start] + string[end:]
+    string = string.replace(string[start_index: end_index], "", 1)
+
+    print(string)
+
+    return string
 
 
 def substitute(string: str, *args) -> str:
-    substring = args[1]
-    replace_string = args[2]
+    substring, new_substring = args[0], args[1]
 
     if substring in string:
-        string = string.replace(substring, replace_string)
+        string = string.replace(substring, new_substring)
         print(string)
-        return string
     else:
         print("Nothing to replace!")
-        return string
+
+    return string
 
 
-index = 0
-raw_string = None
-while True:
+COMMANDS = {
+    "TakeOdd": take_odd,
+    "Cut": cut,
+    "Substitute": substitute,
+}
 
-    data = input()
-    if data == "Done":
-        print(
-            f"Your password is: {raw_string}"
-        )
-        break
-
-    index += 1
-
-    if index == 1:
-        raw_string = data
-        continue
-
-    data = data.split()
-    name = data[0]
-
-    if name == "TakeOdd":
-        raw_string = take_odd(raw_string)
-        print(raw_string)
-
-    elif name == "Cut":
-        raw_string = cut(raw_string, *data)
-        print(raw_string)
-
-    elif name == "Substitute":
-        raw_string = substitute(raw_string, *data)
+get_data_print_final_result()
