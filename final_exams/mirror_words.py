@@ -1,22 +1,20 @@
 import re
 
-string = input()
+regex = r"(#|@)([a-zA-Z]{3,})\1\1([a-zA-Z]{3,})"
 
-regex = r"(#|@)([a-zA-Z]{3,})\1{2}([a-zA-Z]{3,})\1"
+text_string = input()
 
-matched = re.finditer(regex, string)
-matched_list = [pair.group() for pair in re.finditer(regex, string)]
+matched = re.findall(regex, text_string)
 
-if not matched_list:
+if not matched:
     print("No word pairs found!")
 else:
-    print(f"{len(matched_list)} word pairs found!")
+    print(f"{len(matched)} word pairs found!")
 
-mirror_words = [
-    " <=> ".join([match.group(2), match.group(3)])
-    for match in matched
-    if match.group(2) == match.group(3)[::-1]
-]
+mirror_words = []
+for match in matched:
+    if match[1] == match[2][::-1]:
+        mirror_words.append(" <=> ".join(match[1:]))
 
 if mirror_words:
     print("The mirror words are:")
