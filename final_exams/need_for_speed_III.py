@@ -1,29 +1,30 @@
-def cars(n: int) -> dict:
-    result = {}
-
-    for _ in range(n):
+def get_cars_info(cars_count: int) -> dict:
+    cars_data = {}
+    for _ in range(cars_count):
         data = input().split("|")
-        car = data[0]
+        car_name = data[0]
         mileage = int(data[1])
         fuel = int(data[2])
 
-        result[car] = {"mileage": mileage, "fuel": fuel}
+        cars_data[car_name] = {
+            "mileage": mileage,
+            "fuel": fuel
+        }
 
-    return result
+    return cars_data
 
 
 def print_statement(dd: dict) -> print:
-    for car, values in sorted(
-            dd.items(),
-            key=lambda pair: (-pair[1]["mileage"], pair[0])
+    for name, values in sorted(
+            dd.items(), key=lambda pair: (-pair[1]["mileage"], pair[0])
     ):
         print(
-            f"{car} -> Mileage: {values['mileage']} kms, "
+            f"{name} -> Mileage: {values['mileage']} kms, "
             f"Fuel in the tank: {values['fuel']} lt."
         )
 
 
-def main(dd: dict):
+def main_manipulation_printing_func(dd: dict):
     while True:
 
         data = input()
@@ -38,51 +39,55 @@ def main(dd: dict):
 
 
 def drive(dd: dict, *args) -> dict:
-    car = args[0]
+    current_car = args[0]
     distance = int(args[1])
-    fuel = int(args[2])
+    current_fuel = int(args[2])
 
-    if dd[car]["fuel"] < fuel:
+    if dd[current_car]["fuel"] < current_fuel:
         print("Not enough fuel to make that ride")
     else:
-        dd[car]["mileage"] += distance
-        dd[car]["fuel"] -= fuel
+        dd[current_car]["fuel"] -= current_fuel
+        dd[current_car]["mileage"] += distance
         print(
-            f"{car} driven for {distance} kilometers. "
-            f"{fuel} liters of fuel consumed."
+            f"{current_car} driven for {distance} kilometers. "
+            f"{current_fuel} liters of fuel consumed."
         )
 
-    if dd[car]["mileage"] >= MAXIMUM_MILEAGE:
-        print(f"Time to sell the {car}!")
-        del dd[car]
+    if dd[current_car]["mileage"] >= MAXIMUM_MILEAGE:
+        print(f"Time to sell the {current_car}!")
+        del dd[current_car]
 
     return dd
 
 
 def refuel(dd: dict, *args) -> dict:
-    car = args[0]
-    fuel = int(args[1])
+    current_car = args[0]
+    current_fuel = int(args[1])
 
-    if dd[car]["fuel"] + fuel > FUEL_TANK_CAPACITY:
-        fuel = FUEL_TANK_CAPACITY - dd[car]["fuel"]
+    if dd[current_car]["fuel"] + current_fuel > FUEL_TANK_CAPACITY:
+        current_fuel = FUEL_TANK_CAPACITY - dd[current_car]["fuel"]
 
-    dd[car]["fuel"] += fuel
-    print(f"{car} refueled with {fuel} liters")
+    print(f"{current_car} refueled with {current_fuel} liters")
+
+    dd[current_car]["fuel"] += current_fuel
 
     return dd
 
 
 def revert(dd: dict, *args) -> dict:
-    car = args[0]
-    kilometers = int(args[1])
+    current_car = args[0]
+    current_kilometers = int(args[1])
 
-    dd[car]["mileage"] -= kilometers
+    dd[current_car]["mileage"] -= current_kilometers
+
+    if dd[current_car]["mileage"] < MINIMUM_MILEAGE:
+        dd[current_car]["mileage"] = MINIMUM_MILEAGE
+        return dd
+
     print(
-        f"{car} mileage decreased by {kilometers} kilometers"
+        f"{current_car} mileage decreased by "
+        f"{current_kilometers} kilometers"
     )
-
-    if dd[car]["mileage"] < MINIMUM_MILEAGE:
-        dd[car]["mileage"] = MINIMUM_MILEAGE
 
     return dd
 
@@ -92,10 +97,10 @@ COMMANDS = {
     "Refuel": refuel,
     "Revert": revert,
 }
-
 MAXIMUM_MILEAGE = 100_000
 MINIMUM_MILEAGE = 10_000
 FUEL_TANK_CAPACITY = 75
 
-cars_count = int(input())
-main(cars(cars_count))
+cars_number_count = int(input())
+cars: dict = get_cars_info(cars_number_count)
+main_manipulation_printing_func(cars)
