@@ -1,99 +1,91 @@
-from collections import defaultdict
 import re
 
 
-def get_data(n: int) -> dict:
-    result = defaultdict(dict)
+def rate(dd: dict, *args) -> dict:
+    current_plant_name = args[0]
+    current_plant_rating = int(args[1])
 
+    dd[current_plant_name]["rating"].append(current_plant_rating)
+
+    return dd
+
+
+def update(dd: dict, *args) -> dict:
+    current_plant_name = args[0]
+    plant_new_rarity = int(args[1])
+
+    dd[current_plant_name]["rarity"] = plant_new_rarity
+
+    return dd
+
+
+def reset(dd: dict, *args) -> dict:
+    current_plant_name = args[0]
+
+    dd[current_plant_name]["rating"].clear()
+
+    return dd
+
+
+def get_plants_data() -> dict:
+    n = int(input())
+
+    plants_data = {}
     for _ in range(n):
         data = input().split("<->")
-        plant = data[0]
-        rarity = int(data[1])
+        plant_name = data[0]
+        plant_rarity = int(data[1])
+        plant_ratings = []
 
-        result[plant]["rarity"] = rarity
-        result[plant]["rating"] = []
+        plants_data[plant_name] = {
+            "rarity": plant_rarity,
+            "rating": plant_ratings
+        }
 
-    return result
-
-
-def rate_rating(dd: dict, *args) -> dict:
-    plant = args[0]
-    rating = int(args[1])
-
-    dd[plant]["rating"].append(rating)
-
-    return dd
-
-
-def update_rarity(dd: dict, *args) -> dict:
-    plant = args[0]
-    new_rarity = int(args[1])
-
-    dd[plant]["rarity"] = new_rarity
-
-    return dd
-
-
-def reset_plant(dd: dict, *args) -> dict:
-    plant = args[0]
-
-    dd[plant]["rating"].clear()
-
-    return dd
+    return plants_data
 
 
 def average_ratings(lst: list) -> int:
-    if len(lst) == 0:
+    try:
+        return sum(lst) / len(lst)
+    except:
         return 0
 
-    return sum(lst) / len(lst)
 
-
-def print_statement(dd: dict) -> print:
+def sorting_printing_statement(dd: dict) -> print:
     print("Plants for the exhibition:")
 
     for plant, values in sorted(
-            dd.items(),
-            key=lambda pair_values: (
-                    pair_values[1]["rarity"],
-                    average_ratings(pair_values[1]["rating"]),
-            ),
-            reverse=True
+            dd.items(), key=lambda pair: (
+                    pair[1]["rarity"],
+                    average_ratings(pair[1]["rating"])
+            ), reverse=True
     ):
-
         print(
-            f"- {plant}; Rarity: "
-            f"{values['rarity']}; "
+            f"- {plant}; "
+            f"Rarity: {values['rarity']}; "
             f"Rating: {average_ratings(values['rating']):.2f}"
         )
 
 
-def main(dd: dict):
+def main_manipulation_print_func(dd: dict, commands) -> print:
     while True:
 
         data = input()
         if data == "Exhibition":
-            print_statement(dd)
+            sorting_printing_statement(dd)
             break
 
-        data = re.split(r":\s+|\s-\s", data)
+        data = re.split(r":\s|\s-\s", data)
         command = data.pop(0)
-        plant = data[0]
 
-        if (
-                plant not in dd or
-                command not in COMMANDS
-        ):
+        try:
+            commands[command](dd, *data)
+        except:
             print("error")
-            continue
-
-        COMMANDS[command](dd, *data)
 
 
-COMMANDS = {
-    "Rate": rate_rating,
-    "Update": update_rarity,
-    "Reset": reset_plant,
-}
+COMMANDS = dict(Rate=rate, Update=update, Reset=reset)
 
-main(get_data(int(input())))
+plants = get_plants_data()
+main_manipulation_print_func(plants, COMMANDS)
