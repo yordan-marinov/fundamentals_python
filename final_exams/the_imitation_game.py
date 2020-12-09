@@ -1,43 +1,42 @@
-def move_letters(string: str, *args) -> str:
-    number = int(args[0])
-    substring = string[:number]
+def move(string: str, *args) -> str:
+    number_of_letters = int(args[0])
 
-    return string[number:] + substring
+    string = string[number_of_letters:] + string[: number_of_letters]
+    return string
 
 
-def insert_letters(string: str, *args) -> str:
+def insert(string: str, *args) -> str:
     index = int(args[0])
     value = args[1]
 
-    return string[:index] + value + string[index:]
+    string = string[:index] + value + string[index:]
+    return string
 
 
 def change_all(string: str, *args) -> str:
     substring = args[0]
-    replacement = args[1]
+    new_substring = args[1]
 
-    return string.replace(substring, replacement)
+    string = string.replace(substring, new_substring)
 
+    return string
+
+
+def main_manipulation_printing_func(string: str, commands: dict) -> print:
+    while True:
+
+        data = input()
+        if data == "Decode":
+            print(f"The decrypted message is: {string}")
+            break
+
+        data = data.split("|")
+        command = data.pop(0)
+
+        string = commands[command](string, *data)
+
+
+COMMANDS = dict(Move=move, Insert=insert, ChangeAll=change_all)
 
 encrypted_message = input()
-
-COMMANDS = {
-    "Move": move_letters,
-    "Insert": insert_letters,
-    "ChangeAll": change_all,
-}
-
-while True:
-
-    data = input()
-    if data == "Decode":
-        print(
-            f"The decrypted message is: {encrypted_message}"
-        )
-
-        break
-
-    data = data.split("|")
-    command = data.pop(0)
-
-    encrypted_message = COMMANDS[command](encrypted_message, *data)
+main_manipulation_printing_func(encrypted_message, COMMANDS)
