@@ -4,10 +4,15 @@ regex = r"(\/|=)([A-Z][a-zA-Z]{2,})\1"
 
 string = input()
 
-matched = {
-    match.group(2): len(match.group(2))
-    for match in re.finditer(regex, string)
-}
+# matched = {
+#     match.group(2): len(match.group(2))
+#     for match in re.finditer(regex, string)
+# }
+#
+# print(f"Destinations: {', '.join(matched.keys())}")
+# print(f"Travel Points: {sum(matched.values())}")
 
-print(f"Destinations: {', '.join(matched.keys())}")
-print(f"Travel Points: {sum(matched.values())}")
+
+matched = [match.group(2) for match in re.finditer(regex, string)]
+print(f"Destinations: {', '.join(matched)}")
+print(f"Travel Points: {sum(len(i) for i in matched)}")
